@@ -10,12 +10,10 @@ namespace LibreWiki.Controllers
 {
     public class CategoryController : Controller
     {
-        //private readonly WikiContext _context;
         private readonly ICategoryRepo _categoryRepo;
 
-        public CategoryController(WikiContext context, ICategoryRepo categoryRepo)
+        public CategoryController(ICategoryRepo categoryRepo)
         {
-            //_context = context;
             _categoryRepo = categoryRepo;
         }
 
@@ -88,7 +86,7 @@ namespace LibreWiki.Controllers
             }
             return View(category);
         }
-
+        
         // GET: Category/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -177,10 +175,11 @@ namespace LibreWiki.Controllers
             return _context.Categories.Any(e => e.Id == id);
         }
 
-        public async Task<IActionResult> _CategoryList()
+        /*public async Task<IActionResult> _CategoryList()
         {
             var wikiContext = await _context.Categories.Where(c => c.ParentCategoryId == null || c.ParentCategoryId == 0).Include(c => c.ChildenCategories).ToListAsync();
             return PartialView(wikiContext);
-        }
+        }*/
+        
     }
 }
