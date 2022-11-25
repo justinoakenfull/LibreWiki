@@ -1,0 +1,81 @@
+﻿@model IEnumerable<Category>
+
+<div class="p-3 align-items-start" style="height: 100%; background-color: #373737">
+    <div class="border-bottom w-100">
+        <div class="row">
+            <div class="col-2 me-2"></div>
+            <h3 class="text-center col-7">Categories</h3>
+            <button class="btn btn-success text-center align-content-center col-2 me-2"> + </button>
+        </div>
+    </div>
+    <ul class="list-group list-group-flush rounded-5">
+        @{
+            await FindLastSubCategory(Model);
+        }
+    </ul>
+</div>
+
+@functions
+{
+    bool _isSubCategory;
+    int _numOfTabs;
+    public async Task FindLastSubCategory(IEnumerable<Category> categories)
+    {
+        //Loop over each category found
+        foreach (Category item in categories)
+        {
+            //Check if it's its a sub category, if it is, we need to get how many levels deep this category is for indentation applied later.
+            if (item.ParentCategoryId != null)
+            {
+                //Gets the number (or subcat level) of indentations needed.
+                _numOfTabs = GetParentCount(item, 0);
+                _isSubCategory = true;
+
+            }
+            //PlaceHolder #TODO Change this to a get the category and take you to the page instead of edit the category
+            <a class="list-group-item-action d-inline-flex text-decoration-none text-light align-items-center py-1 ps-3 hover-primary rounded" asp-action="Edit" asp-route-id="@item.Id">
+                <!--If this is a subcategory add the tabs to the start of the text and image instead of the a tag so all the buttons line up when hovered-->
+                @if (_isSubCategory)
+                {
+                    for (var i = 0; i < _numOfTabs; i++)
+                    {
+                        <text>&emsp;</text>
+                    }
+                    //Arrow image
+                    <image src="Media/Images/Category/arrow-return-right.svg" width="16" height="16"></image>
+                    <div class="ps-2">
+                        @item.Name
+                    </div>
+                    //Set to false for the next category we check
+                    _isSubCategory = false;
+                }
+                else
+                {
+                    @item.Name
+                }
+            </a>
+            //check if we have any sub categories inside of this category
+            var subCategories = item.ChildenCategories;
+            if (subCategories is {Count: > 0 })
+            {
+                await FindLastSubCategory(subCategories);
+            }
+
+        }
+
+    }
+
+    //Gets how many parents a sub category has
+    public int GetParentCount(Category baseCategory, int count)
+    {
+        while (true)
+        {
+            if (baseCategory.ParentCategory == null)
+            {
+                return count;
+            }
+            count++;
+            baseCategory = baseCategory.ParentCategory;
+        }
+    }
+}
